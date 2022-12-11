@@ -12,6 +12,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/yaml.v2"
 )
@@ -23,6 +24,7 @@ type Config struct {
 	DB_PASS   string `yaml:"DB_PASS"`
 	DB_PORT   string `yaml:"DB_PORT"`
 	TZ        string `yaml:"TZ"`
+	ENV_NAME  string `yaml:"ENV_NAME"`
 }
 
 func main() {
@@ -62,6 +64,30 @@ func main() {
 		log.Fatal(err)
 	}
 	fmt.Printf("%#v\n", cfg)
+
+	// cors
+	// 環境チェック
+	allowOrigins := []string{""}
+	if cfg.ENV_NAME == "local" {
+		allowOrigins = []string{"http://localhost:3000"}
+	}
+	fmt.Println(allowOrigins)
+	// cors設定適用
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     allowOrigins,
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Access-Control-Allow-Headers", "Content-Length", "Content-Type", "Authorization"},
+		AllowCredentials: false,
+		MaxAge:           12 * time.Hour,
+	}))
+
+	// api routing
+	v1 := router.Group("/v1")
+	v1.GET("/todolist", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "OK",
+		})
+	})
 
 	// shutDown
 	quit := make(chan os.Signal)
