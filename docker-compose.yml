@@ -2,9 +2,9 @@ version: '3.8'
 
 services:
   db:
-    image: mysql:8.0.31
-    env_file:
-      - ./config/local.yml
+    build:
+      context: .
+      dockerfile: ./Dockerfile
     environment:
       MYSQL_ROOT_PASSWORD: ${ROOT_PASS}
       MYSQL_DATABASE: ${DB_NAME}
@@ -12,7 +12,7 @@ services:
       MYSQL_PASSWORD: ${DB_PASS}
       TZ: ${TZ}
     ports:
-        - ${DB_PORT}:3306
+        - 3306:3306
     volumes:
         - db-store:/var/lib/mysql
 
