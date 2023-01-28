@@ -15,6 +15,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/yaml.v2"
+	"github.com/roy-aaissk/backend_todo_app/pkg/api"
 )
 
 type Config struct {
@@ -63,7 +64,7 @@ func main() {
 	if err := yaml.Unmarshal([]byte(expaneded), &cfg); err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("%#v\n", cfg)
+	// fmt.Printf("%#v\n", cfg)
 
 	// cors
 	// 環境チェック
@@ -83,11 +84,13 @@ func main() {
 
 	// api routing
 	v1 := router.Group("/v1")
-	v1.GET("/todolist", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "OK",
-		})
-	})
+	// v1.GET("/todolist", func(c *gin.Context) {
+	// 	c.JSON(200, gin.H{
+	// 		"message": "OK",
+	// 	})
+	// })
+	// todoを追加
+	v1.POST("/todo", handler.AddTodo)
 
 	// shutDown
 	quit := make(chan os.Signal)
